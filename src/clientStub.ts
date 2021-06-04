@@ -17,6 +17,17 @@ import {
     UiKeywords,
 } from "./types";
 
+// tslint:disable-next-line
+const getStreamText = (stream: any) => new Promise((resolve, reject) => {
+  let text = "";
+  // tslint:disable-next-line
+  stream.on("error", reject);
+  // tslint:disable-next-line
+  stream.on("data", (chunk: string) => text += chunk);
+  // tslint:disable-next-line
+  stream.on("close", () => resolve(text));
+});
+
 // milliseconds before doing automatic token refresh
 const AUTO_REFRESH_PREFETCH_TIME = 5000;
 
@@ -510,7 +521,11 @@ export class DgraphClientStub {
 
         let json;
         // tslint:disable-next-line no-unsafe-any
-        const responseText: string = await response.text();
+        const responseText: string = response.body.pipe
+            // tslint:disable-next-line no-unsafe-any
+            ? await getStreamText(response.body)
+            // tslint:disable-next-line no-unsafe-any
+            : await response.text();
 
         try {
             // tslint:disable-next-line no-unsafe-any
