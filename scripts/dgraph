@@ -1,0 +1,5 @@
+#!/bin/bash
+
+image="dgraph/dgraph:v20.11.3"
+
+docker run --rm --network host -v "${DOCKER_VOLUME}":/dgraph -v "${DATA}":/dgraph/data "${image}" dgraph "$@"
